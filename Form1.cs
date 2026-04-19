@@ -105,7 +105,8 @@ namespace Checkers
 
         void TryMove(int sr, int sc, int dr, int dc)
         {
-            
+            if (!IsValidMove(sr, sc, dr, dc))
+                return;
 
             int piece = board[sr, sc];
 
@@ -134,6 +135,65 @@ namespace Checkers
                 board[dr, dc] = 4;
 
             isRedTurn = !isRedTurn;
+        }
+
+        bool IsValidMove(int sr, int sc, int dr, int dc)
+        {
+            if (dr < 0 || dr >= 8 || dc < 0 || dc >= 8)
+                return false;
+
+            if (board[dr, dc] != 0)
+                return false;
+
+            int piece = board[sr, sc];
+
+            int direction = (piece == 1) ? -1 : 1;
+
+            // King can move both directions
+            if (piece == 3 || piece == 4)
+                direction = 0;
+
+            // Normal move
+            if (Math.Abs(dr - sr) == 1 && Math.Abs(dc - sc) == 1)
+            {
+                if (piece == 3 || piece == 4)
+                    return true;
+
+                if (dr == sr + direction)
+                    return true;
+            }
+
+            // Jump move
+            if (Math.Abs(dr - sr) == 2 && Math.Abs(dc - sc) == 2)
+            {
+                int midRow = (sr + dr) / 2;
+                int midCol = (sc + dc) / 2;
+
+                int midPiece = board[midRow, midCol];
+
+                if (midPiece != 0 && midPiece != piece &&
+                    !(IsSameTeam(piece, midPiece)))
+                {
+                    if (piece == 3 || piece == 4)
+                        return true;
+
+                    if (dr == sr + 2 * direction)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool IsSameTeam(int a, int b)
+        {
+            if ((a == 1 || a == 3) && (b == 1 || b == 3))
+                return true;
+
+            if ((a == 2 || a == 4) && (b == 2 || b == 4))
+                return true;
+
+            return false;
         }
 
         Bitmap MakeTransparent(Bitmap bmp)
