@@ -346,13 +346,30 @@ namespace Checkers
                 return;
             }
 
-            var move = moves[rand.Next(moves.Count)];
+            // prioritize capture moves
+            var captureMoves = new List<(int sr, int sc, int dr, int dc)>();
+
+            foreach (var move in moves)
+            {
+                if (Math.Abs(move.dr - move.sr) == 2)
+                {
+                    captureMoves.Add(move);
+                }
+            }
+
+            var availableMoves =
+                captureMoves.Count > 0
+                ? captureMoves
+                : moves;
+
+            var moveToPlay =
+                availableMoves[rand.Next(availableMoves.Count)];
 
             TryMove(
-                move.sr,
-                move.sc,
-                move.dr,
-                move.dc,
+                moveToPlay.sr,
+                moveToPlay.sc,
+                moveToPlay.dr,
+                moveToPlay.dc,
                 true);
         }
     }
