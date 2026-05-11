@@ -24,8 +24,6 @@ namespace Checkers
             CreateBoard();
             SetupPieces();
 
-            
-
             this.Text = "Red's Turn"; // shows whose turn it is
             this.ClientSize = new Size(520, 520); // window fits board
         }
@@ -116,7 +114,7 @@ namespace Checkers
             }
         }
 
-        public void TryMove(int sr, int sc, int dr, int dc)
+        public void TryMove(int sr, int sc, int dr, int dc, bool computerMove = false)
         {
             if (!IsValidMove(sr, sc, dr, dc))
             {
@@ -160,12 +158,11 @@ namespace Checkers
 
             this.Text = isRedTurn ? "Red's Turn" : "Black's Turn";
 
-
-            if (!isRedTurn) // black (computer)
+            // computer turn
+            if (!isRedTurn && !computerMove)
             {
                 MakeComputerMove();
             }
-
         }
 
         bool IsValidMove(int sr, int sc, int dr, int dc)
@@ -250,10 +247,14 @@ namespace Checkers
                 for (int sc = 0; sc < 8; sc++)
                 {
                     int piece = board[sr, sc];
-                    if (piece == 0) continue;
+
+                    if (piece == 0)
+                        continue;
 
                     bool isRedPiece = (piece == 1 || piece == 3);
-                    if (isRedPiece != forRed) continue;
+
+                    if (isRedPiece != forRed)
+                        continue;
 
                     for (int dr = 0; dr < 8; dr++)
                     {
@@ -263,20 +264,22 @@ namespace Checkers
                                 moves.Add((sr, sc, dr, dc));
                         }
                     }
-
                 }
             }
+
             return moves;
         }
 
         public void MakeComputerMove()
         {
             var moves = GetAllValidMoves(false);
+
             if (moves.Count == 0)
                 return;
-            var random = new Random();
-            var move = moves[random.Next(moves.Count)];
-            TryMove(move.sr, move.sc, move.dr, move.dc);
+
+            var move = moves[rand.Next(moves.Count)];
+
+            TryMove(move.sr, move.sc, move.dr, move.dc, true);
         }
     }
 }
